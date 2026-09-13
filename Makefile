@@ -2,6 +2,9 @@
 makefile-train:
 	go run main.go -train
 
+## makefile-chat: Alias for run
+makefile-chat: run
+
 ## export-yaml: Export training data from parent Makefile to YAML
 export-yaml:
 	cat ../../Makefile | go run main.go -export-yaml -yaml ../../data/training/trainingdata/makefile.yaml
@@ -13,11 +16,6 @@ run:
 build:
 	go build -o app main.go
 
-## chat: Alias for run
-chat: run
-
-## makefile-chat: Alias for run
-makefile-chat: run
 
 ## fuzzy: Run the standalone fuzzy finder
 fuzzy:

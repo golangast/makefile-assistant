@@ -8,19 +8,20 @@
 package main
 
 import (
-	"bufio"
-	"encoding/gob"
-	"flag"
-	"fmt"
-	"math"
-	"math/rand"
-	"os"
-	"runtime"
-	"sort"
-	"strings"
-	"syscall"
-	"unsafe"
-)
+ 	"bufio"
+ 	"encoding/gob"
+ 	"flag"
+ 	"fmt"
+ 	"math"
+ 	"math/rand"
+ 	"os"
+ 	"os/exec"
+ 	"runtime"
+ 	"sort"
+ 	"strings"
+ 	"syscall"
+ 	"unsafe"
+ )
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONFIG
@@ -826,16 +827,25 @@ func runChat(targets []MakeTarget) {
 		return
 	}
 
-	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println("\nMakefile Chat — type 'quit' or 'exit' to stop.")
-	fmt.Println("Ask about any make target.\n")
+	fmt.Println("Ask about any make target.")
+
+	tty, err := os.OpenFile("/dev/tty", os.O_RDWR, 0)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to open TTY: %v\n", err)
+		return
+	}
+	defer tty.Close()
+
+	rd := bufio.NewReader(tty)
 
 	for {
-		fmt.Print("You: ")
-		if !scanner.Scan() {
+		tty.WriteString("You: ")
+		line, err := rd.ReadString('\n')
+		if err != nil {
 			break
 		}
-		text := strings.TrimSpace(scanner.Text())
+		text := strings.TrimSpace(line)
 		if text == "" {
 			continue
 		}
@@ -849,10 +859,46 @@ func runChat(targets []MakeTarget) {
 			continue
 		}
 
-		fmt.Println("Bot: Here are the best matches:")
-		for _, r := range ranked {
-			fmt.Printf("  - make %s (%d%%)\n", r.Name, int(r.Score*100))
+		ties := []Ranked{ranked[0]}
+		for i := 1; i < len(ranked); i++ {
+			if ranked[i].Score >= 1.0 {
+				ties = append(ties, ranked[i])
+			} else {
+				break
+			}
 		}
+
+		var chosen string
+		if len(ties) >= 2 {
+			var selTargets []MakeTarget
+			nameMap := make(map[string]MakeTarget)
+			for _, t := range targets {
+				nameMap[t.Name] = t
+			}
+			for _, r := range ties {
+				if t, ok := nameMap[r.Name]; ok {
+					selTargets = append(selTargets, t)
+				}
+			}
+			fmt.Println("Bot: Multiple targets match — pick one:")
+			chosen = runFuzzyFinderFiltered(selTargets)
+			if chosen == "" {
+				continue
+			}
+		} else {
+			chosen = ranked[0].Name
+		}
+
+		fmt.Printf("Bot: %s — running make %s now.\n",
+			responseTmpl[0], chosen)
+		cmd := exec.Command("make", chosen)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = nil
+		if err := cmd.Run(); err != nil {
+			fmt.Fprintf(os.Stderr, "make %s failed: %v\n", chosen, err)
+		}
+		fmt.Println()
 	}
 }
 
@@ -976,6 +1022,186 @@ func parseChoice(line string) Choice {
 		Comment: comment,
 		Raw:     line,
 	}
+}
+
+func runFuzzyFinderFiltered(targets []MakeTarget) string {
+	var choices []Choice
+	for _, t := range targets {
+		choices = append(choices, Choice{
+			Command: t.Name,
+			Comment: t.Description,
+			Raw:     t.Name + " " + t.Description,
+		})
+	}
+
+	if len(choices) == 0 {
+		return ""
+	}
+
+	tty, err := os.OpenFile("/dev/tty", os.O_RDWR, 0)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to open TTY: %v\n", err)
+		return ""
+	}
+	defer tty.Close()
+
+	fd := tty.Fd()
+	oldState, err := enableRawMode(fd)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to set raw mode: %v\n", err)
+		return ""
+	}
+	defer disableRawMode(fd, oldState)
+
+	tty.WriteString("\x1b[?1049h\x1b[?25l\x1b[?1000h")
+	defer tty.WriteString("\x1b[?1049l\x1b[?25h\x1b[?1000l")
+
+	query := ""
+	selectedIndex := 0
+	filtered := make([]Choice, len(choices))
+	copy(filtered, choices)
+
+	filterChoices := func() {
+		if query == "" {
+			filtered = make([]Choice, len(choices))
+			copy(filtered, choices)
+			selectedIndex = 0
+			return
+		}
+		type match struct {
+			choice Choice
+			score  int
+		}
+		var matches []match
+		for _, choice := range choices {
+			if ok, score := fuzzyMatch(choice.Raw, query); ok {
+				matches = append(matches, match{choice: choice, score: score})
+			}
+		}
+		filtered = nil
+		for _, m := range matches {
+			filtered = append(filtered, m.choice)
+		}
+		selectedIndex = 0
+	}
+
+	draw := func() {
+		width, _ := getTerminalSize(fd)
+		colWidth := 24
+		cols := width / colWidth
+		if cols <= 0 {
+			cols = 1
+		}
+		var sb strings.Builder
+		sb.WriteString("\x1b[H\x1b[J")
+		sb.WriteString(fmt.Sprintf("\x1b[1;36m[ > %s ]\x1b[0m\r\n\r\n", query))
+		if len(filtered) > 0 {
+			rows := (len(filtered) + cols - 1) / cols
+			for row := 0; row < rows; row++ {
+				for col := 0; col < cols; col++ {
+					i := col*rows + row
+					if i >= len(filtered) {
+						break
+					}
+					item := filtered[i]
+					label := item.Command
+					if len(label) > 16 {
+						label = label[:16]
+					}
+					if i == selectedIndex {
+						sb.WriteString(fmt.Sprintf("[ \x1b[37;45;1m%-16s\x1b[0m ] ", label))
+					} else {
+						sb.WriteString(fmt.Sprintf("[ \x1b[36m%-16s\x1b[0m ] ", label))
+					}
+				}
+				sb.WriteString("\r\n")
+			}
+			if selectedIndex < len(filtered) && filtered[selectedIndex].Comment != "" {
+				sb.WriteString(fmt.Sprintf("\r\n\x1b[90m> %s\x1b[0m", filtered[selectedIndex].Comment))
+			}
+		}
+		tty.WriteString(sb.String())
+	}
+
+	buf := make([]byte, 6)
+	var selectedResult Choice
+
+	for {
+		draw()
+		n, err := tty.Read(buf)
+		if err != nil || n == 0 {
+			break
+		}
+		width, _ := getTerminalSize(fd)
+		cols := width / 24
+		if cols <= 0 {
+			cols = 1
+		}
+		total := len(filtered)
+		rows := 1
+		if total > 0 {
+			rows = (total + cols - 1) / cols
+		}
+		moveUp := func() {
+			if selectedIndex%rows > 0 {
+				selectedIndex--
+			}
+		}
+		moveDown := func() {
+			if selectedIndex%rows < rows-1 && selectedIndex+1 < total {
+				selectedIndex++
+			}
+		}
+		moveRight := func() {
+			if selectedIndex+rows < total {
+				selectedIndex += rows
+			}
+		}
+		moveLeft := func() {
+			if selectedIndex-rows >= 0 {
+				selectedIndex -= rows
+			}
+		}
+		switch {
+		case buf[0] == 3:
+			return ""
+		case buf[0] == 13:
+			if len(filtered) > 0 && selectedIndex < len(filtered) {
+				selectedResult = filtered[selectedIndex]
+			}
+			disableRawMode(fd, oldState)
+			tty.WriteString("\x1b[?1049l\x1b[?25h\x1b[?1000l")
+			return selectedResult.Command
+		case buf[0] == 127 || buf[0] == 8:
+			if len(query) > 0 {
+				query = query[:len(query)-1]
+				filterChoices()
+			}
+		case buf[0] == 14 || buf[0] == 10:
+			moveDown()
+		case buf[0] == 16 || buf[0] == 11:
+			moveUp()
+		case buf[0] == 27:
+			if n >= 3 && buf[1] == '[' {
+				switch buf[2] {
+				case 'A':
+					moveUp()
+				case 'B':
+					moveDown()
+				case 'C':
+					moveRight()
+				case 'D':
+					moveLeft()
+				}
+			}
+		default:
+			if buf[0] >= 32 && buf[0] <= 126 {
+				query += string(buf[0])
+				filterChoices()
+			}
+		}
+	}
+	return ""
 }
 
 func runFuzzyFinder(targets []MakeTarget) {
