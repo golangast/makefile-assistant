@@ -1,0 +1,281 @@
+conversations:
+  - conversation_id: makefile-run-0
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "Run the standalone makefile assistant chat"
+      - turn_sequence: 2
+        role: assistant
+        content: "you can use make run for this"
+  - conversation_id: makefile-run-1
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "how do i run the standalone makefile assistant chat"
+      - turn_sequence: 2
+        role: assistant
+        content: "use make run"
+  - conversation_id: makefile-run-2
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "what is run"
+      - turn_sequence: 2
+        role: assistant
+        content: "try make run"
+  - conversation_id: makefile-run-3
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "run"
+      - turn_sequence: 2
+        role: assistant
+        content: "run make run to do this"
+  - conversation_id: makefile-run-4
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "run command"
+      - turn_sequence: 2
+        role: assistant
+        content: "make run will help with that"
+  - conversation_id: makefile-chat-0
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "Alias for run"
+      - turn_sequence: 2
+        role: assistant
+        content: "you can use make chat for this"
+  - conversation_id: makefile-chat-1
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "how do i alias for run"
+      - turn_sequence: 2
+        role: assistant
+        content: "use make chat"
+  - conversation_id: makefile-chat-2
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "what is chat"
+      - turn_sequence: 2
+        role: assistant
+        content: "try make chat"
+  - conversation_id: makefile-chat-3
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "chat"
+      - turn_sequence: 2
+        role: assistant
+        content: "run make chat to do this"
+  - conversation_id: makefile-chat-4
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "chat command"
+      - turn_sequence: 2
+        role: assistant
+        content: "make chat will help with that"
+  - conversation_id: makefile-makefile-chat-0
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "Alias for run"
+      - turn_sequence: 2
+        role: assistant
+        content: "you can use make makefile-chat for this"
+  - conversation_id: makefile-makefile-chat-1
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "how do i alias for run"
+      - turn_sequence: 2
+        role: assistant
+        content: "use make makefile-chat"
+  - conversation_id: makefile-makefile-chat-2
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "what is makefile-chat"
+      - turn_sequence: 2
+        role: assistant
+        content: "try make makefile-chat"
+  - conversation_id: makefile-makefile-chat-3
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "makefile chat"
+      - turn_sequence: 2
+        role: assistant
+        content: "run make makefile-chat to do this"
+  - conversation_id: makefile-makefile-chat-4
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "makefile-chat command"
+      - turn_sequence: 2
+        role: assistant
+        content: "make makefile-chat will help with that"
+  - conversation_id: makefile-fuzzy-0
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "Run the standalone fuzzy finder"
+      - turn_sequence: 2
+        role: assistant
+        content: "you can use make fuzzy for this"
+  - conversation_id: makefile-fuzzy-1
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "how do i run the standalone fuzzy finder"
+      - turn_sequence: 2
+        role: assistant
+        content: "use make fuzzy"
+  - conversation_id: makefile-fuzzy-2
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "what is fuzzy"
+      - turn_sequence: 2
+        role: assistant
+        content: "try make fuzzy"
+  - conversation_id: makefile-fuzzy-3
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "fuzzy"
+      - turn_sequence: 2
+        role: assistant
+        content: "run make fuzzy to do this"
+  - conversation_id: makefile-fuzzy-4
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "fuzzy command"
+      - turn_sequence: 2
+        role: assistant
+        content: "make fuzzy will help with that"
+  - conversation_id: makefile-sel-0
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "Interactive fuzzy finder target selector"
+      - turn_sequence: 2
+        role: assistant
+        content: "you can use make sel for this"
+  - conversation_id: makefile-sel-1
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "how do i interactive fuzzy finder target selector"
+      - turn_sequence: 2
+        role: assistant
+        content: "use make sel"
+  - conversation_id: makefile-sel-2
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "what is sel"
+      - turn_sequence: 2
+        role: assistant
+        content: "try make sel"
+  - conversation_id: makefile-sel-3
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "sel"
+      - turn_sequence: 2
+        role: assistant
+        content: "run make sel to do this"
+  - conversation_id: makefile-sel-4
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "sel command"
+      - turn_sequence: 2
+        role: assistant
+        content: "make sel will help with that"
+  - conversation_id: makefile-export-yaml-0
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "Export training data to YAML"
+      - turn_sequence: 2
+        role: assistant
+        content: "you can use make export-yaml for this"
+  - conversation_id: makefile-export-yaml-1
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "how do i export training data to yaml"
+      - turn_sequence: 2
+        role: assistant
+        content: "use make export-yaml"
+  - conversation_id: makefile-export-yaml-2
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "what is export-yaml"
+      - turn_sequence: 2
+        role: assistant
+        content: "try make export-yaml"
+  - conversation_id: makefile-export-yaml-3
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "export yaml"
+      - turn_sequence: 2
+        role: assistant
+        content: "run make export-yaml to do this"
+  - conversation_id: makefile-export-yaml-4
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "export-yaml command"
+      - turn_sequence: 2
+        role: assistant
+        content: "make export-yaml will help with that"
+  - conversation_id: makefile-help-0
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "Show available commands"
+      - turn_sequence: 2
+        role: assistant
+        content: "you can use make help for this"
+  - conversation_id: makefile-help-1
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "how do i show available commands"
+      - turn_sequence: 2
+        role: assistant
+        content: "use make help"
+  - conversation_id: makefile-help-2
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "what is help"
+      - turn_sequence: 2
+        role: assistant
+        content: "try make help"
+  - conversation_id: makefile-help-3
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "help"
+      - turn_sequence: 2
+        role: assistant
+        content: "run make help to do this"
+  - conversation_id: makefile-help-4
+    turns:
+      - turn_sequence: 1
+        role: user
+        content: "help command"
+      - turn_sequence: 2
+        role: assistant
+        content: "make help will help with that"
