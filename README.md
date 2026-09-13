@@ -1,27 +1,62 @@
-# makefile-assistant
+# Makefile Assistant (Gollemer)
 
-## ⚡ Quick Start
+**Makefile Assistant** parses your project’s `Makefile`, trains an AI model on its targets, and lets you execute commands via an interactive terminal UI or natural language chat.
+
+---
+
+## Prerequisites
+
+* **Go 1.26+** (requires native SIMD acceleration)
+
+---
+
+## Quick Start
 
 ### 1. Installation
-Gollemer requires **Go 1.26+** to leverage native SIMD acceleration.
+
+Clone the repository and set up the build environment:
 
 ```bash
-git clone https://github.com/golangast/makefile-assistant
+git clone [https://github.com/golangast/makefile-assistant](https://github.com/golangast/makefile-assistant)
 cd gollemer
 export GOEXPERIMENT=simd
 go mod tidy
 ```
 
-### 2. Training the Model
-We provide a simplified `Makefile` to handle the curriculum training process.
-
 ```bash
-make export-yaml ##to read your make file
-make makefile-train ##to train the model
-make sel ## to see all commands and run them in terminal UI
-make makefile-chat ## to talk to the program to choose your makefile command (example: hey run the makefile training)
+
+2. Export Makefile Data
+Reads your Makefile and exports the targets into YAML format for processing:
+make export-yaml
+
 ```
-### Things to know
-The sel is the terminal UI but if the command you give to makefile-chat gets both 100%'s then it will run the UI and only show those two commands
-example: You: run the makefile training
-This may bring up [makefile-train] [makefile-chat] because both got 100% guesses so it shows both to choose from.
+```bash
+3. Train the Model
+Trains the internal model on your parsed Makefile commands:
+make makefile-train
+
+```
+```bash
+4. Interactive Terminal UI
+Opens a Terminal UI to visually browse and run commands:
+make sel
+
+```
+```bash
+5. Chat Interface
+Starts a conversational interface to trigger commands using natural language:
+make makefile-chat
+Example: "Hey, run the makefile training"
+```
+```bash
+
+How Chat Matching Works
+When using make makefile-chat, the assistant analyzes your natural language input and evaluates candidate commands:
+```
+```bash
+
+Direct Match: If one command clearly matches your request, it executes directly.
+
+Tied Matches: If multiple commands receive identical top confidence scores (for example, both makefile-train and makefile-chat hit 100% confidence), the system automatically opens the Terminal UI (make sel) filtered to display only those matching choices.
+```
+
