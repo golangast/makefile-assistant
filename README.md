@@ -59,4 +59,8 @@ Direct Match: If one command clearly matches your request, it executes directly.
 
 Tied Matches: If multiple commands receive identical top confidence scores (for example, both makefile-train and makefile-chat hit 100% confidence), the system automatically opens the Terminal UI (make sel) filtered to display only those matching choices.
 ```
-[![Watch Demo Video](readmevideo/thumbnail.png)](https://github.com/golangast/makefile-assistant/blob/main/readmevideo/example1.gif)
+<p align="center">
+  <a href="https://github.com/golangast/makefile-assistant/blob/main/readmevideo/example1.webm">
+    <img src="readmevideo/example1.gif" alt="Watch Demo Video" width="100%">
+  </a>
+</p>
