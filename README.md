@@ -1,6 +1,8 @@
 # Makefile Assistant (Gollemer)
 
 **Makefile Assistant** parses your project’s `Makefile`, trains an AI model on its targets, and lets you execute commands via an interactive terminal UI or natural language chat.
+
+Click the following image to see the Youtube video on it.
 [![Control Makefiles with Natural Language!](https://img.youtube.com/vi/BKopICB_xX0/maxresdefault.jpg)](https://www.youtube.com/watch?v=BKopICB_xX0)
 
 
